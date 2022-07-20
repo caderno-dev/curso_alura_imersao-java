@@ -1,4 +1,6 @@
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -15,15 +17,24 @@ public class App {
 
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
         String body = response.body();
-        System.out.println(body);
 
         // extrair só os dados que interessam (titulo, poster, classificacao)
         var parser = new JsonParser();
         List<Map<String, String>> filmes = parser.parse(body);
 
         // exibir e manipular os dados
+        var geradora = new GeradoraDeFigurinhas();
         for (Map<String,String> filme : filmes) {
-            System.out.println(filme.get("title"));
+           String urlImagem = filme.get("image");
+           String titulo = filme.get("title");
+           InputStream input = new URL(urlImagem).openStream();
+
+           String nomeArquivo = titulo + ".png";
+
+           geradora.cria(input, nomeArquivo);
+
+           System.out.println(titulo);
+           System.out.println();
         }
 
     }
